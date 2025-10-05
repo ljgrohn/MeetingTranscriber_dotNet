@@ -1,0 +1,78 @@
+﻿<Window x:Class="MeetingTranscriber.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:local="clr-namespace:MeetingTranscriber"
+        xmlns:vm="clr-namespace:MeetingTranscriber.ViewModels"
+        mc:Ignorable="d"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        Title="Meeting Transcriber"
+        Height="500"
+        Width="850"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <TextBlock Grid.Row="0"
+                   Text="Meeting Transcriber"
+                   Style="{StaticResource TitleTextBlockStyle}"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,30"/>
+
+        <!-- Control Panel -->
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,20">
+
+            <Button Content="{Binding RecordingButtonText}"
+                    Command="{Binding ToggleRecordingCommand}"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Width="150"
+                    Height="40"
+                    FontSize="16"/>
+        </StackPanel>
+
+        <!-- Main Content Area (for future transcription display) -->
+        <Border Grid.Row="2"
+                BorderThickness="1"
+                BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumBrush}"
+                CornerRadius="8"
+                Padding="15"
+                Margin="0,10">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <TextBlock Text="Transcription will appear here..."
+                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                           FontSize="14"/>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="3"
+                Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+                CornerRadius="4"
+                Padding="10,5"
+                Margin="0,10,0,0">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Status: "
+                           FontWeight="SemiBold"
+                           Margin="0,0,5,0"/>
+                <TextBlock Text="{Binding Status}"
+                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
