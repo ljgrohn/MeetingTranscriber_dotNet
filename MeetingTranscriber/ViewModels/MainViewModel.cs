@@ -13,8 +13,10 @@ namespace MeetingTranscriber.ViewModels
         private bool _isRecording;
         private string _recordingButtonText = "Start Recording";
         private float _audioLevel;
+        private double _audioLevelPercent;
         private RecordingSource _selectedRecordingSource = RecordingSource.Microphone;
         private string? _currentRecordingPath;
+        private string? _recordingPath;
         private bool _disposed;
 
         public string Status
@@ -44,7 +46,25 @@ namespace MeetingTranscriber.ViewModels
         public float AudioLevel
         {
             get => _audioLevel;
-            set => SetProperty(ref _audioLevel, value);
+            set
+            {
+                if (SetProperty(ref _audioLevel, value))
+                {
+                    AudioLevelPercent = value * 100;
+                }
+            }
+        }
+
+        public double AudioLevelPercent
+        {
+            get => _audioLevelPercent;
+            set => SetProperty(ref _audioLevelPercent, value);
+        }
+
+        public string? RecordingPath
+        {
+            get => _recordingPath;
+            set => SetProperty(ref _recordingPath, value);
         }
 
         public RecordingSource SelectedRecordingSource
@@ -59,6 +79,8 @@ namespace MeetingTranscriber.ViewModels
         public ICommand SelectMicrophoneCommand { get; }
         public ICommand SelectSystemAudioCommand { get; }
         public ICommand SelectBothCommand { get; }
+        public ICommand OpenRecordingsFolderCommand { get; }
+        public ICommand OpenSettingsCommand { get; }
 
         public MainViewModel()
         {
@@ -74,6 +96,8 @@ namespace MeetingTranscriber.ViewModels
             SelectMicrophoneCommand = new RelayCommand(() => SelectedRecordingSource = RecordingSource.Microphone);
             SelectSystemAudioCommand = new RelayCommand(() => SelectedRecordingSource = RecordingSource.SystemAudio);
             SelectBothCommand = new RelayCommand(() => SelectedRecordingSource = RecordingSource.Both);
+            OpenRecordingsFolderCommand = new RelayCommand(OpenRecordingsFolder);
+            OpenSettingsCommand = new RelayCommand(OpenSettings);
 
             // Initialize recording sources
             RecordingSources = new ObservableCollection<string>
@@ -131,16 +155,19 @@ namespace MeetingTranscriber.ViewModels
                     _currentRecordingPath = e.FileName;
                     var fileName = !string.IsNullOrEmpty(e.FileName) ? Path.GetFileName(e.FileName) : "unknown";
                     Status = $"Recording to {fileName}...";
+                    RecordingPath = e.FileName;
                     break;
 
                 case RecordingStatus.Idle:
                     if (!string.IsNullOrEmpty(_currentRecordingPath))
                     {
                         Status = $"Recording saved: {Path.GetFileName(_currentRecordingPath)}";
+                        RecordingPath = _currentRecordingPath;
                     }
                     else
                     {
                         Status = "Recording stopped";
+                        RecordingPath = null;
                     }
                     AudioLevel = 0; // Reset audio level
                     break;
@@ -152,6 +179,7 @@ namespace MeetingTranscriber.ViewModels
                 case RecordingStatus.Error:
                     Status = $"Recording error: {e.Message}";
                     IsRecording = false;
+                    RecordingPath = null;
                     break;
             }
         }
@@ -166,6 +194,35 @@ namespace MeetingTranscriber.ViewModels
         {
             Status = $"Error: {e.Message}";
             IsRecording = false;
+        }
+
+        private void OpenRecordingsFolder()
+        {
+            try
+            {
+                var recordingsPath = _audioService.GetRecordingsDirectory();
+                if (Directory.Exists(recordingsPath))
+                {
+                    System.Diagnostics.Process.Start("explorer.exe", recordingsPath);
+                }
+                else
+                {
+                    Status = "Recordings folder not found";
+                }
+            }
+            catch (Exception ex)
+            {
+                Status = $"Error opening folder: {ex.Message}";
+            }
+        }
+
+        private void OpenSettings()
+        {
+            var settingsWindow = new Views.SettingsWindow
+            {
+                Owner = System.Windows.Application.Current.MainWindow
+            };
+            settingsWindow.ShowDialog();
         }
 
         public void Dispose()
