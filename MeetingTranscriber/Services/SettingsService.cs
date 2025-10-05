@@ -7,6 +7,7 @@ namespace MeetingTranscriber.Services
     public class AppSettings
     {
         public string? AssemblyAIApiKey { get; set; }
+        public string? OpenAIApiKey { get; set; }
     }
 
     public class SettingsService

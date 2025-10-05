@@ -15,16 +15,26 @@ namespace MeetingTranscriber.Views
             _viewModel = new SettingsViewModel(this);
             DataContext = _viewModel;
 
-            // Load existing API key if available
-            if (!string.IsNullOrEmpty(_viewModel.ApiKey))
+            // Load existing API keys if available
+            if (!string.IsNullOrEmpty(_viewModel.AssemblyAIApiKey))
             {
-                ApiKeyPasswordBox.Password = _viewModel.ApiKey;
+                AssemblyAIApiKeyPasswordBox.Password = _viewModel.AssemblyAIApiKey;
+            }
+
+            if (!string.IsNullOrEmpty(_viewModel.OpenAIApiKey))
+            {
+                OpenAIApiKeyPasswordBox.Password = _viewModel.OpenAIApiKey;
             }
         }
 
-        private void ApiKeyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        private void AssemblyAIApiKeyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            _viewModel.ApiKey = ApiKeyPasswordBox.Password;
+            _viewModel.AssemblyAIApiKey = AssemblyAIApiKeyPasswordBox.Password;
+        }
+
+        private void OpenAIApiKeyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            _viewModel.OpenAIApiKey = OpenAIApiKeyPasswordBox.Password;
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)

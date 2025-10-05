@@ -10,14 +10,21 @@ namespace MeetingTranscriber.ViewModels
     {
         private readonly SettingsService _settingsService;
         private readonly Window _window;
-        private string _apiKey = string.Empty;
+        private string _assemblyAIApiKey = string.Empty;
+        private string _openAIApiKey = string.Empty;
         private string? _statusMessage;
         private Brush _statusColor = Brushes.Green;
 
-        public string ApiKey
+        public string AssemblyAIApiKey
         {
-            get => _apiKey;
-            set => SetProperty(ref _apiKey, value);
+            get => _assemblyAIApiKey;
+            set => SetProperty(ref _assemblyAIApiKey, value);
+        }
+
+        public string OpenAIApiKey
+        {
+            get => _openAIApiKey;
+            set => SetProperty(ref _openAIApiKey, value);
         }
 
         public string? StatusMessage
@@ -42,7 +49,8 @@ namespace MeetingTranscriber.ViewModels
 
             // Load existing settings
             var settings = _settingsService.LoadSettings();
-            _apiKey = settings.AssemblyAIApiKey ?? string.Empty;
+            _assemblyAIApiKey = settings.AssemblyAIApiKey ?? string.Empty;
+            _openAIApiKey = settings.OpenAIApiKey ?? string.Empty;
 
             // Initialize commands
             SaveCommand = new RelayCommand(Save);
@@ -53,16 +61,18 @@ namespace MeetingTranscriber.ViewModels
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(ApiKey))
+                // At least one API key should be provided
+                if (string.IsNullOrWhiteSpace(AssemblyAIApiKey) && string.IsNullOrWhiteSpace(OpenAIApiKey))
                 {
-                    StatusMessage = "Please enter an API key";
+                    StatusMessage = "Please enter at least one API key";
                     StatusColor = Brushes.Red;
                     return;
                 }
 
                 var settings = new AppSettings
                 {
-                    AssemblyAIApiKey = ApiKey
+                    AssemblyAIApiKey = string.IsNullOrWhiteSpace(AssemblyAIApiKey) ? null : AssemblyAIApiKey,
+                    OpenAIApiKey = string.IsNullOrWhiteSpace(OpenAIApiKey) ? null : OpenAIApiKey
                 };
 
                 _settingsService.SaveSettings(settings);
