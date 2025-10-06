@@ -5,10 +5,247 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ui:ThemeResources xmlns:ui="http://schemas.modernwpf.com/2019" />
-                <ui:XamlControlsResources xmlns:ui="http://schemas.modernwpf.com/2019" />
-            </ResourceDictionary.MergedDictionaries>
+            <!-- Terminal Color Palette -->
+            <SolidColorBrush x:Key="TerminalBackground" Color="#0A0A0A"/>
+            <SolidColorBrush x:Key="TerminalForeground" Color="#E0E0E0"/>
+            <SolidColorBrush x:Key="TerminalAccent" Color="#FF1493"/>
+            <SolidColorBrush x:Key="TerminalBorder" Color="#333333"/>
+            <SolidColorBrush x:Key="TerminalDimmed" Color="#808080"/>
+            <SolidColorBrush x:Key="TerminalSuccess" Color="#00FF00"/>
+            <SolidColorBrush x:Key="TerminalError" Color="#FF0000"/>
+
+            <!-- Terminal Font -->
+            <FontFamily x:Key="TerminalFont">Consolas, Courier New</FontFamily>
+
+            <!-- Window Style -->
+            <Style TargetType="Window">
+                <Setter Property="Background" Value="#000000"/>
+                <Setter Property="Foreground" Value="{StaticResource TerminalForeground}"/>
+                <Setter Property="FontFamily" Value="{StaticResource TerminalFont}"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="BorderBrush" Value="#000000"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Style>
+
+            <!-- UserControl Style -->
+            <Style TargetType="UserControl">
+                <Setter Property="Background" Value="#000000"/>
+                <Setter Property="Foreground" Value="{StaticResource TerminalForeground}"/>
+            </Style>
+
+            <!-- Grid Style -->
+            <Style TargetType="Grid">
+                <Setter Property="Background" Value="#000000"/>
+            </Style>
+
+            <!-- Button Style -->
+            <Style TargetType="Button">
+                <Setter Property="Background" Value="#000000"/>
+                <Setter Property="Foreground" Value="{StaticResource TerminalForeground}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TerminalForeground}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="FontFamily" Value="{StaticResource TerminalFont}"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Padding" Value="15,5"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource TerminalAccent}"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource TerminalAccent}"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="BorderBrush" Value="{StaticResource TerminalBorder}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource TerminalDimmed}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Accent Button Style -->
+            <Style x:Key="AccentButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="#000000"/>
+                <Setter Property="Foreground" Value="{StaticResource TerminalForeground}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TerminalForeground}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="FontFamily" Value="{StaticResource TerminalFont}"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Padding" Value="15,5"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource TerminalAccent}"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource TerminalAccent}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- TextBox Style -->
+            <Style TargetType="TextBox">
+                <Setter Property="Background" Value="{StaticResource TerminalBackground}"/>
+                <Setter Property="Foreground" Value="{StaticResource TerminalForeground}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TerminalBorder}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="FontFamily" Value="{StaticResource TerminalFont}"/>
+                <Setter Property="CaretBrush" Value="{StaticResource TerminalAccent}"/>
+                <Setter Property="SelectionBrush" Value="{StaticResource TerminalAccent}"/>
+                <Setter Property="Padding" Value="5"/>
+            </Style>
+
+            <!-- PasswordBox Style -->
+            <Style TargetType="PasswordBox">
+                <Setter Property="Background" Value="{StaticResource TerminalBackground}"/>
+                <Setter Property="Foreground" Value="{StaticResource TerminalForeground}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TerminalBorder}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="FontFamily" Value="{StaticResource TerminalFont}"/>
+                <Setter Property="CaretBrush" Value="{StaticResource TerminalAccent}"/>
+                <Setter Property="SelectionBrush" Value="{StaticResource TerminalAccent}"/>
+                <Setter Property="Padding" Value="5"/>
+            </Style>
+
+            <!-- TextBlock Style -->
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TerminalForeground}"/>
+                <Setter Property="FontFamily" Value="{StaticResource TerminalFont}"/>
+            </Style>
+
+            <!-- Title TextBlock Style -->
+            <Style x:Key="TitleTextBlockStyle" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TerminalAccent}"/>
+                <Setter Property="FontFamily" Value="{StaticResource TerminalFont}"/>
+                <Setter Property="FontSize" Value="28"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+            </Style>
+
+            <!-- Border Style -->
+            <Style TargetType="Border">
+                <Setter Property="BorderBrush" Value="{StaticResource TerminalBorder}"/>
+                <Setter Property="Background" Value="#000000"/>
+            </Style>
+
+            <!-- ContentControl Style -->
+            <Style TargetType="ContentControl">
+                <Setter Property="Background" Value="#000000"/>
+            </Style>
+
+            <!-- StackPanel Style -->
+            <Style TargetType="StackPanel">
+                <Setter Property="Background" Value="Transparent"/>
+            </Style>
+
+            <!-- TabControl Style -->
+            <Style TargetType="TabControl">
+                <Setter Property="Background" Value="{StaticResource TerminalBackground}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TerminalBorder}"/>
+            </Style>
+
+            <!-- TabItem Style -->
+            <Style TargetType="TabItem">
+                <Setter Property="Background" Value="#000000"/>
+                <Setter Property="Foreground" Value="{StaticResource TerminalForeground}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TerminalBorder}"/>
+                <Setter Property="FontFamily" Value="{StaticResource TerminalFont}"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
+                            <Border Name="Border"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="1,1,1,0"
+                                    Padding="10,5">
+                                <ContentPresenter ContentSource="Header"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="#000000"/>
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="{StaticResource TerminalAccent}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource TerminalAccent}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- DataGrid Style -->
+            <Style TargetType="DataGrid">
+                <Setter Property="Background" Value="{StaticResource TerminalBackground}"/>
+                <Setter Property="Foreground" Value="{StaticResource TerminalForeground}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TerminalBorder}"/>
+                <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource TerminalBorder}"/>
+                <Setter Property="VerticalGridLinesBrush" Value="{StaticResource TerminalBorder}"/>
+                <Setter Property="FontFamily" Value="{StaticResource TerminalFont}"/>
+                <Setter Property="RowBackground" Value="{StaticResource TerminalBackground}"/>
+                <Setter Property="AlternatingRowBackground" Value="#151515"/>
+            </Style>
+
+            <!-- DataGridColumnHeader Style -->
+            <Style TargetType="DataGridColumnHeader">
+                <Setter Property="Background" Value="{StaticResource TerminalBackground}"/>
+                <Setter Property="Foreground" Value="{StaticResource TerminalAccent}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TerminalBorder}"/>
+                <Setter Property="FontFamily" Value="{StaticResource TerminalFont}"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Padding" Value="10,5"/>
+            </Style>
+
+            <!-- DataGridCell Style -->
+            <Style TargetType="DataGridCell">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{StaticResource TerminalForeground}"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="Background" Value="{StaticResource TerminalAccent}"/>
+                        <Setter Property="Foreground" Value="#000000"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- ProgressBar Style -->
+            <Style TargetType="ProgressBar">
+                <Setter Property="Background" Value="{StaticResource TerminalBackground}"/>
+                <Setter Property="Foreground" Value="{StaticResource TerminalAccent}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TerminalBorder}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Height" Value="20"/>
+            </Style>
+
+            <!-- ScrollViewer Style -->
+            <Style TargetType="ScrollViewer">
+                <Setter Property="Background" Value="{StaticResource TerminalBackground}"/>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using NAudio.CoreAudioApi;
 
 namespace MeetingTranscriber.Services
@@ -46,7 +47,6 @@ namespace MeetingTranscriber.Services
         private WasapiLoopbackCapture? _loopbackCapture;
         private WaveFileWriter? _microphoneWriter;
         private WaveFileWriter? _systemAudioWriter;
-        private WaveFileWriter? _mixedWriter;
         private string? _currentMicrophoneFile;
         private string? _currentSystemAudioFile;
         private string? _currentMixedFile;
@@ -154,10 +154,8 @@ namespace MeetingTranscriber.Services
             StartMicrophoneRecording();
             StartSystemAudioRecording();
 
-            // Create a mixed output file as well
+            // Generate the mixed file path (will be created after recording stops)
             _currentMixedFile = GenerateFileName("Mixed");
-            var mixedFormat = new WaveFormat(44100, 16, 2);
-            _mixedWriter = new WaveFileWriter(_currentMixedFile, mixedFormat);
         }
 
         public void StopRecording()
@@ -175,6 +173,16 @@ namespace MeetingTranscriber.Services
                 _loopbackCapture?.StopRecording();
 
                 CleanupRecording();
+
+                // Mix audio files if recording both sources
+                if (_recordingSource == RecordingSource.Both &&
+                    !string.IsNullOrEmpty(_currentMicrophoneFile) &&
+                    !string.IsNullOrEmpty(_currentSystemAudioFile) &&
+                    !string.IsNullOrEmpty(_currentMixedFile))
+                {
+                    OnStatusChanged(RecordingStatus.Stopping, "Mixing audio files...", _currentMixedFile);
+                    MixAudioFiles(_currentMicrophoneFile, _currentSystemAudioFile, _currentMixedFile);
+                }
 
                 Status = RecordingStatus.Idle;
                 OnStatusChanged(RecordingStatus.Idle, "Recording stopped", GetCurrentFileName());
@@ -253,13 +261,32 @@ namespace MeetingTranscriber.Services
             return Path.Combine(_recordingsPath, fileName);
         }
 
+        private void MixAudioFiles(string microphoneFile, string systemAudioFile, string outputFile)
+        {
+            try
+            {
+                using var micReader = new AudioFileReader(microphoneFile);
+                using var systemReader = new AudioFileReader(systemAudioFile);
+
+                // Convert both to same format if needed and mix them
+                var mixer = new MixingSampleProvider(new[] { micReader, systemReader });
+
+                // Convert back to wave format for writing
+                WaveFileWriter.CreateWaveFile16(outputFile, mixer);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to mix audio files: {ex.Message}", ex);
+            }
+        }
+
         private string? GetCurrentFileName()
         {
             return _recordingSource switch
             {
                 RecordingSource.Microphone => _currentMicrophoneFile,
                 RecordingSource.SystemAudio => _currentSystemAudioFile,
-                RecordingSource.Both => _currentMixedFile ?? _currentMicrophoneFile,
+                RecordingSource.Both => _currentMixedFile, // Use mixed file for transcription
                 _ => null
             };
         }
@@ -271,9 +298,6 @@ namespace MeetingTranscriber.Services
 
             _systemAudioWriter?.Dispose();
             _systemAudioWriter = null;
-
-            _mixedWriter?.Dispose();
-            _mixedWriter = null;
 
             if (_waveIn != null)
             {

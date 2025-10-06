@@ -1,0 +1,176 @@
+<UserControl x:Class="MeetingTranscriber.Views.RecordingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:MeetingTranscriber"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Control Panel -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <!-- Recording Button and Indicator -->
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,15">
+
+                <Button Content="{Binding RecordingButtonText}"
+                        Command="{Binding ToggleRecordingCommand}"
+                        Width="200"
+                        Height="45"
+                        FontSize="14"
+                        Style="{StaticResource AccentButtonStyle}"/>
+
+                <!-- Recording Indicator -->
+                <StackPanel Orientation="Horizontal"
+                            Margin="20,0,0,0"
+                            Visibility="{Binding IsRecording, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Text="►"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TerminalAccent}"
+                               Margin="0,0,8,0"
+                               VerticalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <EventTrigger RoutedEvent="Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard RepeatBehavior="Forever">
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                From="1.0" To="0.2"
+                                                                Duration="0:0:0.8"
+                                                                AutoReverse="True"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock Text="[ REC ]"
+                               FontSize="14"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TerminalAccent}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Audio Level Meter -->
+            <StackPanel Visibility="{Binding IsRecording, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Margin="0,0,0,15">
+                <TextBlock Text="AUDIO_LEVEL:"
+                           FontSize="11"
+                           Margin="0,0,0,8"
+                           HorizontalAlignment="Center"
+                           Foreground="{StaticResource TerminalDimmed}"/>
+                <ProgressBar Value="{Binding AudioLevelPercent}"
+                             Width="400"
+                             Height="25"
+                             Minimum="0"
+                             Maximum="100"/>
+            </StackPanel>
+
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Margin="0,10,0,0">
+                <Button Content="[ OPEN_FILES ]"
+                        Command="{Binding OpenRecordingsFolderCommand}"
+                        Width="180"
+                        Height="35"
+                        FontSize="12"
+                        Margin="0,0,10,0"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Main Content Area with Tabs -->
+        <Border Grid.Row="1"
+                BorderThickness="2">
+            <TabControl>
+                <TabItem Header="[ TRANSCRIPT ]">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  Padding="20">
+                        <TextBlock Text="{Binding TranscriptText}"
+                                   TextWrapping="Wrap"
+                                   FontSize="13"
+                                   LineHeight="20">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding TranscriptText}" Value="{x:Null}">
+                                            <Setter Property="Foreground" Value="{StaticResource TerminalDimmed}"/>
+                                            <Setter Property="Text" Value="> Awaiting recording data...&#x0a;> System will auto-transcribe on stop."/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding TranscriptText}" Value="">
+                                            <Setter Property="Foreground" Value="{StaticResource TerminalDimmed}"/>
+                                            <Setter Property="Text" Value="> Awaiting recording data...&#x0a;> System will auto-transcribe on stop."/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem Header="[ AI_SUMMARY ]">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  Padding="20">
+                        <TextBlock Text="{Binding SummaryText}"
+                                   TextWrapping="Wrap"
+                                   FontSize="13"
+                                   LineHeight="20">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SummaryText}" Value="{x:Null}">
+                                            <Setter Property="Foreground" Value="{StaticResource TerminalDimmed}"/>
+                                            <Setter Property="Text" Value="> Awaiting transcript completion...&#x0a;> AI summary will auto-generate."/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SummaryText}" Value="">
+                                            <Setter Property="Foreground" Value="{StaticResource TerminalDimmed}"/>
+                                            <Setter Property="Text" Value="> Awaiting transcript completion...&#x0a;> AI summary will auto-generate."/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2"
+                BorderThickness="2,0,0,0"
+                Padding="15,10"
+                Margin="0,10,0,0">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="STATUS: "
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TerminalAccent}"
+                               Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Status}"/>
+                </StackPanel>
+                <TextBlock Text="{Binding RecordingPath}"
+                           FontSize="11"
+                           Foreground="{StaticResource TerminalDimmed}"
+                           Margin="0,5,0,0"
+                           TextWrapping="Wrap"
+                           Visibility="{Binding RecordingPath, Converter={StaticResource StringToVisibilityConverter}}"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

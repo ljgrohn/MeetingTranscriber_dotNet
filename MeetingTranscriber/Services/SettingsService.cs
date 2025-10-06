@@ -8,6 +8,7 @@ namespace MeetingTranscriber.Services
     {
         public string? AssemblyAIApiKey { get; set; }
         public string? OpenAIApiKey { get; set; }
+        public string? SaveDirectory { get; set; }
     }
 
     public class SettingsService

@@ -3,15 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:local="clr-namespace:MeetingTranscriber"
         mc:Ignorable="d"
-        ui:WindowHelper.UseModernWindowStyle="True"
-        Title="Settings"
-        Height="450"
-        Width="500"
+        Title="[ SYSTEM_CONFIG ]"
+        Height="550"
+        Width="550"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        BorderThickness="0">
 
     <Window.Resources>
         <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
@@ -27,49 +26,92 @@
 
         <!-- Title -->
         <TextBlock Grid.Row="0"
-                   Text="Settings"
+                   Text="► CONFIG_MANAGER"
                    Style="{StaticResource TitleTextBlockStyle}"
-                   Margin="0,0,0,30"/>
+                   FontSize="24"
+                   Margin="0,0,0,25"/>
 
         <!-- API Keys Section -->
         <StackPanel Grid.Row="1" Margin="0,0,0,20">
             <!-- AssemblyAI API Key -->
-            <TextBlock Text="AssemblyAI API Key"
-                       FontWeight="SemiBold"
-                       Margin="0,0,0,10"/>
+            <TextBlock Text="ASSEMBLYAI_API_KEY:"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource TerminalAccent}"
+                       Margin="0,0,0,8"/>
 
             <PasswordBox x:Name="AssemblyAIApiKeyPasswordBox"
                          Height="35"
-                         FontSize="14"
+                         FontSize="12"
                          PasswordChanged="AssemblyAIApiKeyPasswordBox_PasswordChanged"/>
 
-            <TextBlock Margin="0,5,0,0">
+            <TextBlock Margin="0,5,0,0"
+                       FontSize="10"
+                       Foreground="{StaticResource TerminalDimmed}">
                 <Hyperlink NavigateUri="https://www.assemblyai.com/dashboard/signup"
-                           RequestNavigate="Hyperlink_RequestNavigate">
-                    Don't have an API key? Sign up for free at AssemblyAI
+                           RequestNavigate="Hyperlink_RequestNavigate"
+                           Foreground="{StaticResource TerminalAccent}">
+                    // Get API key: assemblyai.com/dashboard
                 </Hyperlink>
             </TextBlock>
 
             <!-- OpenAI API Key -->
-            <TextBlock Text="OpenAI API Key"
-                       FontWeight="SemiBold"
-                       Margin="0,20,0,10"/>
+            <TextBlock Text="OPENAI_API_KEY:"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource TerminalAccent}"
+                       Margin="0,20,0,8"/>
 
             <PasswordBox x:Name="OpenAIApiKeyPasswordBox"
                          Height="35"
-                         FontSize="14"
+                         FontSize="12"
                          PasswordChanged="OpenAIApiKeyPasswordBox_PasswordChanged"/>
 
-            <TextBlock Margin="0,5,0,0">
+            <TextBlock Margin="0,5,0,0"
+                       FontSize="10"
+                       Foreground="{StaticResource TerminalDimmed}">
                 <Hyperlink NavigateUri="https://platform.openai.com/api-keys"
-                           RequestNavigate="Hyperlink_RequestNavigate">
-                    Get your OpenAI API key here
+                           RequestNavigate="Hyperlink_RequestNavigate"
+                           Foreground="{StaticResource TerminalAccent}">
+                    // Get API key: platform.openai.com/api-keys
                 </Hyperlink>
             </TextBlock>
 
-            <TextBlock Text="Your API keys are stored securely on your local machine"
-                       FontSize="11"
-                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+            <!-- Save Directory -->
+            <TextBlock Text="SAVE_DIRECTORY:"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource TerminalAccent}"
+                       Margin="0,20,0,8"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox x:Name="SaveDirectoryTextBox"
+                         Grid.Column="0"
+                         Height="35"
+                         FontSize="11"
+                         VerticalContentAlignment="Center"
+                         IsReadOnly="True"
+                         Text="{Binding SaveDirectory, Mode=TwoWay}"/>
+
+                <Button Grid.Column="1"
+                        Content="[ BROWSE ]"
+                        Click="BrowseFolderButton_Click"
+                        Width="100"
+                        Height="35"
+                        FontSize="11"
+                        Margin="10,0,0,0"/>
+            </Grid>
+
+            <TextBlock Text="// Output: Markdown summaries (.md)"
+                       FontSize="10"
+                       Foreground="{StaticResource TerminalDimmed}"
+                       Margin="0,5,0,0"/>
+
+            <TextBlock Text="// Security: All credentials stored locally only"
+                       FontSize="10"
+                       Foreground="{StaticResource TerminalDimmed}"
                        Margin="0,15,0,0"/>
         </StackPanel>
 
@@ -87,16 +129,18 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="0,20,0,0">
-            <Button Content="Cancel"
+            <Button Content="[ CANCEL ]"
                     Command="{Binding CancelCommand}"
-                    Width="100"
-                    Height="35"
+                    Width="120"
+                    Height="38"
+                    FontSize="12"
                     Margin="0,0,10,0"/>
-            <Button Content="Save"
+            <Button Content="[ SAVE ]"
                     Command="{Binding SaveCommand}"
                     Style="{StaticResource AccentButtonStyle}"
-                    Width="100"
-                    Height="35"/>
+                    Width="120"
+                    Height="38"
+                    FontSize="12"/>
         </StackPanel>
     </Grid>
 </Window>

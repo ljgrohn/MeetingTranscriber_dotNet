@@ -12,6 +12,7 @@ namespace MeetingTranscriber.ViewModels
         private readonly Window _window;
         private string _assemblyAIApiKey = string.Empty;
         private string _openAIApiKey = string.Empty;
+        private string _saveDirectory = string.Empty;
         private string? _statusMessage;
         private Brush _statusColor = Brushes.Green;
 
@@ -25,6 +26,12 @@ namespace MeetingTranscriber.ViewModels
         {
             get => _openAIApiKey;
             set => SetProperty(ref _openAIApiKey, value);
+        }
+
+        public string SaveDirectory
+        {
+            get => _saveDirectory;
+            set => SetProperty(ref _saveDirectory, value);
         }
 
         public string? StatusMessage
@@ -51,6 +58,7 @@ namespace MeetingTranscriber.ViewModels
             var settings = _settingsService.LoadSettings();
             _assemblyAIApiKey = settings.AssemblyAIApiKey ?? string.Empty;
             _openAIApiKey = settings.OpenAIApiKey ?? string.Empty;
+            _saveDirectory = settings.SaveDirectory ?? string.Empty;
 
             // Initialize commands
             SaveCommand = new RelayCommand(Save);
@@ -72,7 +80,8 @@ namespace MeetingTranscriber.ViewModels
                 var settings = new AppSettings
                 {
                     AssemblyAIApiKey = string.IsNullOrWhiteSpace(AssemblyAIApiKey) ? null : AssemblyAIApiKey,
-                    OpenAIApiKey = string.IsNullOrWhiteSpace(OpenAIApiKey) ? null : OpenAIApiKey
+                    OpenAIApiKey = string.IsNullOrWhiteSpace(OpenAIApiKey) ? null : OpenAIApiKey,
+                    SaveDirectory = string.IsNullOrWhiteSpace(SaveDirectory) ? null : SaveDirectory
                 };
 
                 _settingsService.SaveSettings(settings);
